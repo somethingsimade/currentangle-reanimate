@@ -119,8 +119,10 @@ end
 
 local function updateAngles()
 	for jointName, angle in pairs(syncValues) do
-		local motor = newChar.Torso:FindFirstChild(jointName)
-		motor.CurrentAngle = angle
+		tspawn(function()
+			local motor = newChar.Torso:FindFirstChild(jointName)
+			motor.CurrentAngle = angle
+		end)
 	end
 end
 
