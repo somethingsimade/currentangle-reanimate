@@ -149,9 +149,10 @@ RunService.Heartbeat:Connect(function()
 		newChar.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)]]
 	end
 end)
-local humanoidnewchar = newChar:WaitForChild("Humanoid")
+local humanoidnewchar = newChar:FindFirstChildWhichIsA("Humanoid")
+
 humanoidnewchar.PlatformStand = true
-humanoidnewchar.Humanoid.AutoRotate = false
+humanoidnewchar.AutoRotate = false
 
 tspawn(function()
 	while twait(5) do
