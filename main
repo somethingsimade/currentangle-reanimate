@@ -117,10 +117,12 @@ local function syncAngles()
 	end
 end
 
+local newchartorso = newChar:WaitForChild("Torso")
+
 local function updateAngles()
 	for jointName, angle in pairs(syncValues) do
 		tspawn(function()
-			newChar:WaitForChild("Torso"):FindFirstChild(jointName).CurrentAngle = angle
+			newchartorso:FindFirstChild(jointName).CurrentAngle = angle
 		end)
 	end
 end
@@ -147,9 +149,9 @@ RunService.Heartbeat:Connect(function()
 		newChar.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)]]
 	end
 end)
-
-newChar.Humanoid.PlatformStand = true
-newChar.Humanoid.AutoRotate = false
+local humanoidnewchar = newChar:WaitForChild("Humanoid")
+humanoidnewchar.PlatformStand = true
+humanoidnewchar.Humanoid.AutoRotate = false
 
 tspawn(function()
 	while twait(5) do
