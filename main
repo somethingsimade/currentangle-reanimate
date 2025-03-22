@@ -142,7 +142,7 @@ RunService.Heartbeat:Connect(function()
 	syncAngles()
 	updateAngles()
 	if fakeChar:FindFirstChild("Torso") then
-		newChar.HumanoidRootPart.CFrame = fakeChar.Torso.CFrame
+		newChar:WaitForChild("HumanoidRootPart").CFrame = fakeChar.Torso.CFrame
 		--[[newChar.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
 		newChar.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)]]
 	end
