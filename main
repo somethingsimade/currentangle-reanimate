@@ -19,13 +19,9 @@ for i = 1, 500 do
 	end)
 end
 
---configuration
+local usedefaultanims = _G["Use default animations"] or false
 
-local usedefaultanims = true
-
-local transparency_level = 1
-
---configuration end
+local transparency_level = _G["Fake character transparency level"] or 1
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
@@ -75,6 +71,8 @@ repeat
 	twait()
 until LocalPlayer.Character
 
+task.wait(.1)
+
 local newChar = LocalPlayer.Character
 newChar.Archivable = true
 
@@ -94,36 +92,43 @@ end
 
 LocalPlayer.Character = fakeChar
 
-local function syncAngles()
-	if fakeChar:FindFirstChild("Torso") then
-		for jointName in pairs(syncValues) do
-			local motor = fakeChar.Torso:FindFirstChild(jointName)
-			if motor and motor.Part1 then
-				local relativeCF = motor.Part1.CFrame:ToObjectSpace(fakeChar.Torso.CFrame)
-				local pitch, yaw, _ = relativeCF:ToEulerAnglesXYZ()
-				if motor.Name == "Neck" then
-					syncValues[jointName] = -yaw
-				elseif motor.Name == "Left Shoulder" then
-					syncValues[jointName] = pitch
-				elseif motor.Name == "Right Shoulder" then
-					syncValues[jointName] = -pitch
-				elseif motor.Name == "Left Hip" then
-					syncValues[jointName] = pitch
-				elseif motor.Name == "Right Hip" then
-					syncValues[jointName] = -pitch
-				end
-			end
-		end
-	end
-end
-
 local newchartorso = newChar:WaitForChild("Torso")
 
+local limbmapping = {
+	Neck = fakeChar:WaitForChild("Head"),
+	["Left Shoulder"] = fakeChar:WaitForChild("Left Arm"),
+	["Right Shoulder"] = fakeChar:WaitForChild("Right Arm"),
+	["Left Hip"] = fakeChar:WaitForChild("Left Leg"),
+	["Right Hip"] = fakeChar:WaitForChild("Right Leg")
+}
+
 local function updateAngles()
-	for jointName, angle in pairs(syncValues) do
-		tspawn(function()
-			newchartorso:FindFirstChild(jointName).CurrentAngle = angle
-		end)
+	local torsoFake = fakeChar:FindFirstChild("Torso")
+	local torsoReal = newChar:FindFirstChild("Torso")
+
+	for jointName, limb in pairs(limbmapping) do
+		if limb then
+			local relativecframe = limb.CFrame:ToObjectSpace(torsoFake.CFrame)
+			local pitch, yaw, _ = relativecframe:ToEulerAnglesXYZ()
+			local angle = 0
+
+			if jointName == "Neck" then
+				angle = -yaw
+			elseif jointName == "Left Shoulder" or jointName == "Left Hip" then
+				angle = pitch
+			elseif jointName == "Right Shoulder" or jointName == "Right Hip" then
+				angle = -pitch
+			end
+
+			local realJoint = torsoReal:FindFirstChild(jointName)
+			if realJoint then
+				tspawn(function()
+                    realJoint:SetDesiredAngle(angle) 
+                    realJoint.CurrentAngle = angle
+                    realJoint.DesiredAngle = angle
+                end)
+			end
+		end
 	end
 end
 
@@ -141,7 +146,6 @@ end
 local RunService = game:GetService("RunService")
 
 RunService.Heartbeat:Connect(function()
-	syncAngles()
 	updateAngles()
 	if fakeChar:FindFirstChild("Torso") then
 		newChar:WaitForChild("HumanoidRootPart").CFrame = fakeChar.Torso.CFrame
