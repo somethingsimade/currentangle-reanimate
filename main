@@ -1,23 +1,5 @@
 local twait = task.wait
 local tspawn = task.spawn
-local startTime = tick()
-
-for i = 1, 500 do
-	tspawn(function()
-		while twait() do
-			if tick() - startTime >= 10 then
-				break
-			end
-			pcall(function()
-				if game:GetService("Players").LocalPlayer.Character:GetAttribute("fakeCharacter") then
-					return
-				end
-				game:GetService("Players").LocalPlayer.Character.Animate:Destroy()
-				game:GetService("Players").LocalPlayer.Character.Humanoid.Animator:Destroy()
-			end)
-		end
-	end)
-end
 
 local usedefaultanims = _G["Use default animations"] or false
 
@@ -148,9 +130,11 @@ local RunService = game:GetService("RunService")
 RunService.Heartbeat:Connect(function()
 	updateAngles()
 	if fakeChar:FindFirstChild("Torso") then
-		newChar:WaitForChild("HumanoidRootPart").CFrame = fakeChar.Torso.CFrame
-		--[[newChar.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-		newChar.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)]]
+        tspawn(function()
+        	newChar:WaitForChild("HumanoidRootPart").CFrame = fakeChar.Torso.CFrame
+            newChar.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+            newChar.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+        end)
 	end
 end)
 local humanoidnewchar = newChar:FindFirstChildWhichIsA("Humanoid")
