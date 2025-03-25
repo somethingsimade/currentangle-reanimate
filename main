@@ -1,3 +1,4 @@
+local zeropointone = 0.1
 local twait = task.wait
 local tspawn = task.spawn
 
@@ -30,14 +31,6 @@ if LocalPlayer.Character then
 	removeAnims(LocalPlayer.Character)
 end
 
-local syncValues = {
-	["Left Hip"] = -1000e90000,
-	["Neck"] = -1000e90000,
-	["Left Shoulder"] = -1000e90000,
-	["Right Hip"] = -1000e90000,
-	["Right Shoulder"] = -1000e90000
-}
-
 LocalPlayer.Character.Archivable = true
 local originalChar = LocalPlayer.Character
 local fakeChar = originalChar:Clone()
@@ -53,7 +46,7 @@ repeat
 	twait()
 until LocalPlayer.Character
 
-task.wait(.1)
+twait(zeropointone)
 
 local newChar = LocalPlayer.Character
 newChar.Archivable = true
@@ -145,7 +138,7 @@ humanoidnewchar.AutoRotate = false
 tspawn(function()
 	while twait(5) do
 		newChar.Humanoid.PlatformStand = false
-		twait(0.1)
+		twait(zeropointone)
 		newChar.Humanoid.PlatformStand = true
 	end
 end)
@@ -154,10 +147,9 @@ RunService.PreSimulation:Connect(function()
 	pcall(disableCollisions)
 end)
 
-workspace.CurrentCamera.CameraSubject = fakeChar:FindFirstChild("Humanoid")
+workspace.CurrentCamera.CameraSubject = fakeChar:WaitForChild("Humanoid")
 
 if usedefaultanims then
-
 	local script = fakeChar:FindFirstChild("Animate") or (function()
 		local temp = Instance.new("LocalScript", fakeChar)
 		temp.Name = "Animate"
