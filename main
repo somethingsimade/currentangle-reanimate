@@ -1,24 +1,29 @@
 local zeropointone = 0.1
 local twait = task.wait
 local tspawn = task.spawn
+local currentfakechar = nil
 
 local usedefaultanims = _G["Use default animations"] or false
 
 local transparency_level = _G["Fake character transparency level"] or 1
 
-local disablescripts = _G["Disable character scripts"]
+local disablescripts = _G["Disable character scripts"] or true
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
 local function removeAnims(character)
-	if character:GetAttribute("fakeCharacter") then
+	if character == currentfakechar then
 		return
 	end
 	local humanoid = character:WaitForChild("Humanoid", 5)
 	local animator = humanoid:FindFirstChildWhichIsA("Animator")
-	animator:Destroy()
-	local animateModule = character:FindFirstChild("Animate")
-	animateModule:Destroy()
+	if animator then
+        animator:Destroy()
+    end
+	local animateScript = character:FindFirstChild("Animate")
+	if animateScript then
+        animateScript:Destroy()
+    end
 	local a = humanoid.DescendantAdded:Connect(function(child)
 		if child:IsA("Animator") then
 			child:Destroy()
@@ -38,7 +43,7 @@ local originalChar = LocalPlayer.Character
 local fakeChar = originalChar:Clone()
 fakeChar.Name = LocalPlayer.Name .. "_Fake"
 fakeChar.Parent = workspace
-fakeChar:SetAttribute("fakeCharacter", true)
+currentfakechar = fakeChar
 
 
 originalChar:BreakJoints()
