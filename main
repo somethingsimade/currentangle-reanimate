@@ -2,6 +2,7 @@ local zeropointone = 0.1
 local twait = task.wait
 local tspawn = task.spawn
 local currentfakechar = nil
+local vector3zero = Vector3.zero
 
 local usedefaultanims = _G["Use default animations"] or false
 
@@ -120,9 +121,9 @@ local function stepReanimate()
 	end
 	if fakecharTorso then
 		tspawn(function()
-			newcharRoot.CFrame = fakecharTorso.CFrame
-			newcharRoot.Velocity = Vector3.new(0, 0, 0)
-			newcharRoot.RotVelocity = Vector3.new(0, 0, 0)
+			newcharRoot.CFrame = fakecharTorso.CFrame + Vector3.new(0.01, 0.01, math.random(1, 2) / 100)
+			newcharRoot.Velocity = vector3zero
+			newcharRoot.RotVelocity = vector3zero
 		end)
 	end
 end
