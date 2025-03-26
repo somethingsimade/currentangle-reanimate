@@ -6,6 +6,8 @@ local usedefaultanims = _G["Use default animations"] or false
 
 local transparency_level = _G["Fake character transparency level"] or 1
 
+local disablescripts = _G["Disable character scripts"]
+
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
 local function removeAnims(character)
@@ -51,13 +53,15 @@ twait(zeropointone)
 local newChar = LocalPlayer.Character
 newChar.Archivable = true
 
-tspawn(function()
-	for _, obj in ipairs(fakeChar:GetChildren()) do
-		if obj:IsA("LocalScript") then
-			obj.Enabled = false
+if disablescripts then
+	tspawn(function()
+		for _, obj in ipairs(fakeChar:GetChildren()) do
+			if obj:IsA("LocalScript") then
+				obj.Enabled = false
+			end
 		end
-	end
-end)
+	end)
+end
 
 for _, part in ipairs(fakeChar:GetDescendants()) do
 	if part:IsA("BasePart") or part:IsA("Decal") then
@@ -67,7 +71,10 @@ end
 
 LocalPlayer.Character = fakeChar
 
-local newchartorso = newChar:WaitForChild("Torso")
+local newcharTorso = newChar:WaitForChild("Torso")
+local fakecharTorso = fakeChar:WaitForChild("Torso")
+local newcharRoot = newChar:WaitForChild("HumanoidRootPart")
+local fakecharRoot = fakeChar:WaitForChild("HumanoidRootPart")
 
 local limbmapping = {
 	Neck = fakeChar:WaitForChild("Head"),
@@ -77,33 +84,41 @@ local limbmapping = {
 	["Right Hip"] = fakeChar:WaitForChild("Right Leg")
 }
 
-local function updateAngles()
-	local torsoFake = fakeChar:FindFirstChild("Torso")
-	local torsoReal = newChar:FindFirstChild("Torso")
+local jointmapping = {
+	Neck = newcharTorso:WaitForChild("Neck"),
+	["Left Shoulder"] = newcharTorso:WaitForChild("Left Shoulder"),
+	["Right Shoulder"] = newcharTorso:WaitForChild("Right Shoulder"),
+	["Left Hip"] = newcharTorso:WaitForChild("Left Hip"),
+	["Right Hip"] = newcharTorso:WaitForChild("Right Hip")
+}
 
-	for jointName, limb in pairs(limbmapping) do
-		if limb then
-			local relativecframe = limb.CFrame:ToObjectSpace(torsoFake.CFrame)
-			local pitch, yaw, _ = relativecframe:ToEulerAnglesXYZ()
-			local angle = 0
+local function stepReanimate()
+	for joint, limb in pairs(limbmapping) do
+		local relativecframe = limb.CFrame:ToObjectSpace(fakecharTorso.CFrame)
+		local pitch, yaw, _ = relativecframe:ToEulerAnglesXYZ()
+		local angle = 0
 
-			if jointName == "Neck" then
-				angle = -yaw
-			elseif jointName == "Left Shoulder" or jointName == "Left Hip" then
-				angle = pitch
-			elseif jointName == "Right Shoulder" or jointName == "Right Hip" then
-				angle = -pitch
-			end
-
-			local realJoint = torsoReal:FindFirstChild(jointName)
-			if realJoint then
-				tspawn(function()
-                    realJoint:SetDesiredAngle(angle) 
-                    realJoint.CurrentAngle = angle
-                    realJoint.DesiredAngle = angle
-                end)
-			end
+		if joint == "Neck" then
+			angle = -yaw
+		elseif joint == "Left Shoulder" or joint == "Left Hip" then
+			angle = pitch
+		elseif joint == "Right Shoulder" or joint == "Right Hip" then
+			angle = -pitch
 		end
+
+		local realJoint = jointmapping[joint]
+		tspawn(function()
+			realJoint:SetDesiredAngle(angle) 
+			realJoint.CurrentAngle = angle
+			realJoint.DesiredAngle = angle
+		end)
+	end
+	if fakecharTorso then
+		tspawn(function()
+			newcharRoot.CFrame = fakecharTorso.CFrame
+			newcharRoot.Velocity = Vector3.new(0, 0, 0)
+			newcharRoot.RotVelocity = Vector3.new(0, 0, 0)
+		end)
 	end
 end
 
@@ -121,25 +136,18 @@ end
 local RunService = game:GetService("RunService")
 
 RunService.Heartbeat:Connect(function()
-	updateAngles()
-	if fakeChar:FindFirstChild("Torso") then
-        tspawn(function()
-        	newChar:WaitForChild("HumanoidRootPart").CFrame = fakeChar.Torso.CFrame
-            newChar.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-            newChar.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
-        end)
-	end
+	stepReanimate()
 end)
-local humanoidnewchar = newChar:FindFirstChildWhichIsA("Humanoid")
+local humanoidnewchar = newChar:WaitForChild("Humanoid")
 
 humanoidnewchar.PlatformStand = true
 humanoidnewchar.AutoRotate = false
 
 tspawn(function()
 	while twait(5) do
-		newChar.Humanoid.PlatformStand = false
+		humanoidnewchar.PlatformStand = false
 		twait(zeropointone)
-		newChar.Humanoid.PlatformStand = true
+		humanoidnewchar.PlatformStand = true
 	end
 end)
 
