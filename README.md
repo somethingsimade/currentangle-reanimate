@@ -1,5 +1,5 @@
 # currentangle reanimate
-reanimate that uses currentangle to reanimate and reanimates using the currentangle used to reanimate
+stable currentangle reanimate with some more settings
 
 # httpget
 ```lua
@@ -7,6 +7,7 @@ reanimate that uses currentangle to reanimate and reanimates using the currentan
 local settings = _G
 
 settings["Use default animations"] = true
-settings["Fake character transparency level"] = 1
+settings["Fake character transparency level"] = 1 -- 0 to disable
+settings["Disable character scripts"] = true
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/somethingsimade/currentangle-reanimate/refs/heads/main/main"))()
