@@ -12,6 +12,11 @@ local disablescripts = _G["Disable character scripts"] or true
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
+if not LocalPlayer.Character then
+	LocalPlayer.CharacterAdded:Wait()
+	twait(zeropointone)
+end
+
 local function removeAnims(character)
 	if character == currentfakechar then
 		return
@@ -34,13 +39,9 @@ local function removeAnims(character)
 	end)
 end
 
-if not LocalPlayer.Character then
-	LocalPlayer.CharacterAdded:Wait()
-	twait(zeropointone)
-end
-if LocalPlayer.Character then
-	removeAnims(LocalPlayer.Character)
-end
+LocalPlayer.CharacterAdded:Once(removeAnims)
+
+removeAnims(LocalPlayer.Character)
 
 LocalPlayer.Character.Archivable = true
 local originalChar = LocalPlayer.Character
@@ -49,13 +50,9 @@ fakeChar.Name = LocalPlayer.Name .. "_Fake"
 fakeChar.Parent = workspace
 currentfakechar = fakeChar
 
-
 originalChar:BreakJoints()
-LocalPlayer.Character = nil
 
-repeat
-	twait()
-until LocalPlayer.Character
+LocalPlayer.CharacterAdded:Wait()
 
 twait(zeropointone)
 
