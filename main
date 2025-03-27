@@ -1,3 +1,4 @@
+local game = game
 local zeropointone = 0.1
 local twait = task.wait
 local tspawn = task.spawn
@@ -12,6 +13,9 @@ local disablescripts = _G["Disable character scripts"] or true
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
+LocalPlayer.CharacterAdded:Wait()
+twait(zeropointone)
+
 local function removeAnims(character)
 	if character == currentfakechar then
 		return
@@ -19,12 +23,12 @@ local function removeAnims(character)
 	local humanoid = character:WaitForChild("Humanoid", 5)
 	local animator = humanoid:FindFirstChildWhichIsA("Animator")
 	if animator then
-        animator:Destroy()
-    end
+		animator:Destroy()
+	end
 	local animateScript = character:FindFirstChild("Animate")
 	if animateScript then
-        animateScript:Destroy()
-    end
+		animateScript:Destroy()
+	end
 	local a = humanoid.DescendantAdded:Connect(function(child)
 		if child:IsA("Animator") then
 			child:Destroy()
@@ -46,13 +50,9 @@ fakeChar.Name = LocalPlayer.Name .. "_Fake"
 fakeChar.Parent = workspace
 currentfakechar = fakeChar
 
-
 originalChar:BreakJoints()
-LocalPlayer.Character = nil
 
-repeat
-	twait()
-until LocalPlayer.Character
+LocalPlayer.CharacterAdded:Wait()
 
 twait(zeropointone)
 
@@ -98,32 +98,36 @@ local jointmapping = {
 	["Right Hip"] = newcharTorso:WaitForChild("Right Hip")
 }
 
+local setdesiredangle = jointmapping.Neck.SetDesiredAngle
+
+local calculateJoint = function(joint, yaw, pitch)
+	local angle = nil
+	if joint == "Neck" then
+		angle = -yaw
+	elseif joint == "Left Shoulder" or joint == "Left Hip" then
+		angle = pitch
+	elseif joint == "Right Shoulder" or joint == "Right Hip" then
+		angle = -pitch
+	end
+	return angle
+end
+
 local function stepReanimate()
 	for joint, limb in pairs(limbmapping) do
-		local relativecframe = limb.CFrame:ToObjectSpace(fakecharTorso.CFrame)
-		local pitch, yaw, _ = relativecframe:ToEulerAnglesXYZ()
-		local angle = 0
-
-		if joint == "Neck" then
-			angle = -yaw
-		elseif joint == "Left Shoulder" or joint == "Left Hip" then
-			angle = pitch
-		elseif joint == "Right Shoulder" or joint == "Right Hip" then
-			angle = -pitch
-		end
-
-		local realJoint = jointmapping[joint]
 		tspawn(function()
-			realJoint:SetDesiredAngle(angle) 
+			local relativecframe = limb.CFrame:ToObjectSpace(fakecharTorso.CFrame)
+			local pitch, yaw, _ = relativecframe:ToEulerAnglesXYZ()
+
+			local realJoint = jointmapping[joint]
+			local angle = calculateJoint(joint, yaw, pitch)
+			setdesiredangle(realJoint, angle) 
 			realJoint.CurrentAngle = angle
 			realJoint.DesiredAngle = angle
-		end)
-	end
-	if fakecharTorso then
-		tspawn(function()
-			newcharRoot.CFrame = fakecharTorso.CFrame + Vector3.new(0.01, 0.01, math.random(1, 2) / 100)
-			newcharRoot.Velocity = vector3zero
-			newcharRoot.RotVelocity = vector3zero
+			if fakecharTorso then
+				newcharRoot.CFrame = fakecharTorso.CFrame + Vector3.new(0.01, 0.01, math.random(1, 2) / 100)
+				newcharRoot.Velocity = vector3zero
+				newcharRoot.RotVelocity = vector3zero
+			end
 		end)
 	end
 end
@@ -141,9 +145,8 @@ end
 
 local RunService = game:GetService("RunService")
 
-RunService.Heartbeat:Connect(function()
-	stepReanimate()
-end)
+RunService.Heartbeat:Connect(stepReanimate)
+
 local humanoidnewchar = newChar:WaitForChild("Humanoid")
 
 humanoidnewchar.PlatformStand = true
@@ -165,8 +168,9 @@ workspace.CurrentCamera.CameraSubject = fakeChar:WaitForChild("Humanoid")
 
 if usedefaultanims then
 	local script = fakeChar:FindFirstChild("Animate") or (function()
-		local temp = Instance.new("LocalScript", fakeChar)
+		local temp = Instance.new("LocalScript")
 		temp.Name = "Animate"
+		temp.Parent = fakeChar
 		return temp
 	end)()
 
