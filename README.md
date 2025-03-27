@@ -11,3 +11,8 @@ settings["Fake character transparency level"] = 1 -- 0 to disable
 settings["Disable character scripts"] = true
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/somethingsimade/currentangle-reanimate/refs/heads/main/main"))()
+```
+
+credits
+https://v3rm.net/members/presidentanvil.30546/
+https://v3rm.net/members/sammyc.16754/
