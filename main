@@ -30,7 +30,8 @@ local function removeAnims(character)
 	if animateScript then
         animateScript:Destroy()
     end
-	local a = humanoid.DescendantAdded:Connect(function(child)
+    local a = nil
+	a = humanoid.DescendantAdded:Connect(function(child)
 		if child:IsA("Animator") then
 			child:Destroy()
 			a:Disconnect()
@@ -148,14 +149,6 @@ local humanoidnewchar = newChar:WaitForChild("Humanoid")
 
 humanoidnewchar.PlatformStand = true
 humanoidnewchar.AutoRotate = false
-
-tspawn(function()
-	while twait(5) do
-		humanoidnewchar.PlatformStand = false
-		twait(zeropointone)
-		humanoidnewchar.PlatformStand = true
-	end
-end)
 
 RunService.PreSimulation:Connect(function()
 	pcall(disableCollisions)
