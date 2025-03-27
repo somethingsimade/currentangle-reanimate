@@ -14,5 +14,5 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/somethingsimade/curre
 ```
 
 credits
-https://v3rm.net/members/presidentanvil.30546/
-https://v3rm.net/members/sammyc.16754/
+This code was shared publicly by https://v3rm.net/members/presidentanvil.30546/ and/or
+https://v3rm.net/members/sammyc.16754/ and no license was provided. If you would like it removed, please contact me.
