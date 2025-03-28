@@ -84,6 +84,8 @@ for _, part in ipairs(fakeChar:GetDescendants()) do
 	end
 end
 
+twait(0.4)
+
 LocalPlayer.Character = fakeChar
 
 local newcharTorso = newChar:WaitForChild("Torso")
