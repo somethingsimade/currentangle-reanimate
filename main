@@ -18,6 +18,8 @@ local disablescripts = _G["Disable character scripts"] or true
 
 local fakecollisions = _G["Fake character should collide"] or true
 
+local nametoexcludefromtransparency = _G["Names to exclude from transparency"]
+
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
 if not LocalPlayer.Character then
@@ -80,7 +82,9 @@ end
 
 for _, part in ipairs(fakeChar:GetDescendants()) do
 	if part:IsA("BasePart") or part:IsA("Decal") then
-		part.Transparency = transparency_level
+        if not nametoexcludefromtransparency[tostring(part)] then
+	    	part.Transparency = transparency_level
+        end
 	end
 end
 
