@@ -3,7 +3,6 @@ local twait = task.wait
 local tspawn = task.spawn
 local currentfakechar = nil
 local vector3zero = Vector3.zero
-local flinging = false
 local getgenv = getgenv or function()
 	return _G
 end
