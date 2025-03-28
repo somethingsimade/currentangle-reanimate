@@ -7,7 +7,7 @@ stable currentangle reanimate with some more settings
 local settings = _G
 
 settings["Use default animations"] = true
-settings["Fake character transparency level"] = 0 -- 0 to disable
+settings["Fake character transparency level"] = 1 -- 0 to disable
 settings["Disable character scripts"] = true
 settings["Fake character should collide"] = true
 settings["Names to exclude from transparency"] = {
