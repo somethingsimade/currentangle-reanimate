@@ -197,7 +197,7 @@ end
 
 local function disableCollisions()
 	for _, char in ipairs({ newChar }) do
-		for _, obj in ipairs(char:GetChildren()) do
+		for _, obj in ipairs(char:GetDescendants()) do
 			if obj:IsA("BasePart") then
 				obj.CanCollide = false
 				obj.Massless = true
@@ -208,7 +208,7 @@ end
 
 local function disableCollisionsWithFakeChar()
 	for _, char in ipairs({ newChar, fakeChar }) do
-		for _, obj in ipairs(char:GetChildren()) do
+		for _, obj in ipairs(char:GetDescendants()) do
 			if obj:IsA("BasePart") then
 				obj.CanCollide = false
 				obj.Massless = true
