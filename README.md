@@ -19,7 +19,8 @@ end)
 
 repeat task.wait() until finished
 
--- USAGE: getgenv().fling(character, time, yield)
+-- USAGE: getgenv().fling(character, time, yield) if you dont have getgenv: _G.fling(character, time, yield)
+-- or just fling(character, time, yield)
 
 -- time is for how much time in seconds it will fling
 -- the character
