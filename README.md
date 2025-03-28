@@ -10,8 +10,24 @@ settings["Use default animations"] = true
 settings["Fake character transparency level"] = 1 -- 0 to disable
 settings["Disable character scripts"] = true
 settings["Fake character should collide"] = true
+getgenv().fling = nil
+local finished = false
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/somethingsimade/currentangle-reanimate/refs/heads/main/main"))()
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/somethingsimade/currentangle-reanimate/refs/heads/main/main"))()
+end)
+
+repeat task.wait() until finished
+
+-- USAGE: getgenv().fling(character, time, yield)
+
+-- time is for how much time in seconds it will fling
+-- the character
+
+-- yield is if the fling function will yield
+
+-- you can put your converted script under here
+
 ```
 
 credits
