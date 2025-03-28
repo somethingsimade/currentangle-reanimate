@@ -10,7 +10,7 @@ settings["Use default animations"] = true
 settings["Fake character transparency level"] = 1 -- 0 to disable
 settings["Disable character scripts"] = true
 settings["Fake character should collide"] = true
-getgenv().fling = nil
+(function() if getgenv then return getgenv() else return _G end end)().fling = nil
 local finished = false
 
 task.spawn(function()
