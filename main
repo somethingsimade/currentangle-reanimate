@@ -18,7 +18,7 @@ local disablescripts = _G["Disable character scripts"] or true
 
 local fakecollisions = _G["Fake character should collide"] or true
 
-local nametoexcludefromtransparency = _G["Names to exclude from transparency"]
+local nametoexcludefromtransparency = _G["Names to exclude from transparency"] or {}
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
