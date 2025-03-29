@@ -113,6 +113,8 @@ local jointmapping = {
 	["Right Hip"] = newcharTorso:WaitForChild("Right Hip")
 }
 
+local setdesiredangle = jointmapping["Neck"].SetDesiredAngle
+
 local function stepReanimate()
 	for joint, limb in pairs(limbmapping) do
 		local relativecframe = limb.CFrame:ToObjectSpace(fakecharTorso.CFrame)
@@ -129,7 +131,7 @@ local function stepReanimate()
 
 		local realJoint = jointmapping[joint]
 		tspawn(function()
-			realJoint:SetDesiredAngle(angle) 
+			setdesiredangle(realJoint, angle) 
 			realJoint.CurrentAngle = angle
 			realJoint.DesiredAngle = angle
 		end)
