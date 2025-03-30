@@ -20,6 +20,8 @@ local fakecollisions = _G["Fake character should collide"] or true
 
 local nametoexcludefromtransparency = _G["Names to exclude from transparency"] or {}
 
+local parentrealchartofakechar = _G["Parent real character to fake character"] or false
+
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
 if not LocalPlayer.Character then
@@ -91,6 +93,9 @@ end
 twait(0.4)
 
 LocalPlayer.Character = fakeChar
+if parentrealchartofakechar then
+    newChar.Parent = fakeChar
+end
 
 local newcharTorso = newChar:WaitForChild("Torso")
 local fakecharTorso = fakeChar:WaitForChild("Torso")
