@@ -203,45 +203,44 @@ getgenv().fling = function(character, time, yield)
 end
 
 local function disableCollisions()
-	for _, char in ipairs({ newChar }) do
-		for _, obj in ipairs(char:GetDescendants()) do
-			if obj:IsA("BasePart") then
-				obj.CanCollide = false
-				obj.Massless = true
-			end
-		end
-	end
+    pcall(function()
+    	for _, char in ipairs({ newChar }) do
+		    for _, obj in ipairs(char:GetDescendants()) do
+		    	if obj:IsA("BasePart") then
+		    		obj.CanCollide = false
+	    			obj.Massless = true
+	    		end
+	    	end
+	    end
+    end)
 end
 
 local function disableCollisionsWithFakeChar()
-	for _, char in ipairs({ newChar, fakeChar }) do
-		for _, obj in ipairs(char:GetDescendants()) do
-			if obj:IsA("BasePart") then
-				obj.CanCollide = false
-				obj.Massless = true
-			end
-		end
-	end
+    pcall(function()
+       	for _, char in ipairs({ newChar, fakeChar }) do
+	        for _, obj in ipairs(char:GetDescendants()) do
+		       	if obj:IsA("BasePart") then
+		     		obj.CanCollide = false
+		      		obj.Massless = true
+	    		end
+    		end
+    	end
+    end)
 end
 
 local RunService = game:GetService("RunService")
 
-RunService.Heartbeat:Connect(function()
-	stepReanimate()
-end)
+RunService.Heartbeat:Connect(stepReanimate)
+
 local humanoidnewchar = newChar:WaitForChild("Humanoid")
 
 humanoidnewchar.PlatformStand = true
 humanoidnewchar.AutoRotate = false
 
 if fakecollisions then
-	RunService.PreSimulation:Connect(function()
-		pcall(disableCollisions)
-	end)
+	RunService.PreSimulation:Connect(disableCollisions)
 else
-	RunService.PreSimulation:Connect(function()
-		pcall(disableCollisionsWithFakeChar)
-	end)
+	RunService.PreSimulation:Connect(disableCollisionsWithFakeChar)
 end
 
 workspace.CurrentCamera.CameraSubject = fakeChar:WaitForChild("Humanoid")
