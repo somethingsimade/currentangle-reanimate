@@ -1,3 +1,4 @@
+
 local zeropointone = 0.1
 local twait = task.wait
 local tspawn = task.spawn
@@ -21,6 +22,8 @@ local fakecollisions = _G["Fake character should collide"] or true
 local nametoexcludefromtransparency = _G["Names to exclude from transparency"] or {}
 
 local parentrealchartofakechar = _G["Parent real character to fake character"] or false
+
+local respawncharacter = _G["Respawn character"]
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
@@ -63,9 +66,10 @@ fakeChar.Name = LocalPlayer.Name .. "_Fake"
 fakeChar.Parent = workspace
 currentfakechar = fakeChar
 
-originalChar:BreakJoints()
-
-LocalPlayer.CharacterAdded:Wait()
+if respawncharacter then
+    originalChar:BreakJoints()
+    LocalPlayer.CharacterAdded:Wait()
+end
 
 twait(zeropointone)
 
