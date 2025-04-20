@@ -11,6 +11,8 @@ settings["Fake character transparency level"] = 1 -- 0 to disable
 settings["Disable character scripts"] = true
 settings["Fake character should collide"] = true
 settings["Parent real character to fake character"] = false
+settings["Respawn character"] = true --[[ only should be disabled if
+your character havent played ANY animations, otherwise it breaks the reanimate]]
 settings["Names to exclude from transparency"] = {
     --[[ example:
     ["HumanoidRootPart"] = true,
