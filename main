@@ -1,3 +1,6 @@
+if not game.IsLoaded then
+	game.Loaded:Wait()
+end
 
 local zeropointone = 0.1
 local twait = task.wait
@@ -7,6 +10,12 @@ local vector3zero = Vector3.zero
 local getgenv = getgenv or function()
 	return _G
 end
+
+local dummypart = Instance.new("Part")
+
+local GetDescendants = dummypart.GetDescendants
+local IsA = dummypart.IsA
+local Destroy = dummypart.Destroy
 
 local math_random = math.random
 local Vector3_new = Vector3.new
@@ -30,6 +39,10 @@ local LocalPlayer = game:GetService("Players").LocalPlayer
 if not LocalPlayer.Character then
 	LocalPlayer.CharacterAdded:Wait()
 	twait(zeropointone)
+	if LocalPlayer.Character:FindFirstChildOfClass("Humanoid").RigType ~= Enum.HumanoidRigType.R6 then
+		error("Script is only compatible with R6 type rigs")
+		return
+	end
 end
 
 local function removeAnims(character)
@@ -39,16 +52,16 @@ local function removeAnims(character)
 	local humanoid = character:WaitForChild("Humanoid", 5)
 	local animator = humanoid:FindFirstChildWhichIsA("Animator")
 	if animator then
-		animator:Destroy()
+		Destroy(animator)
 	end
 	local animateScript = character:FindFirstChild("Animate")
 	if animateScript then
-		animateScript:Destroy()
+		Destroy(animateScript)
 	end
 	local a = nil
 	a = humanoid.DescendantAdded:Connect(function(child)
 		if child:IsA("Animator") then
-			child:Destroy()
+			Destroy(child)
 			a:Disconnect()
 			a = nil
 		end
@@ -67,8 +80,8 @@ fakeChar.Parent = workspace
 currentfakechar = fakeChar
 
 if respawncharacter then
-    originalChar:BreakJoints()
-    LocalPlayer.CharacterAdded:Wait()
+	originalChar:BreakJoints()
+	LocalPlayer.CharacterAdded:Wait()
 end
 
 twait(zeropointone)
@@ -88,9 +101,9 @@ end
 
 for _, part in ipairs(fakeChar:GetDescendants()) do
 	if part:IsA("BasePart") or part:IsA("Decal") then
-        if not nametoexcludefromtransparency[tostring(part)] then
-	    	part.Transparency = transparency_level
-        end
+		if not nametoexcludefromtransparency[tostring(part)] then
+			part.Transparency = transparency_level
+		end
 	end
 end
 
@@ -98,7 +111,7 @@ twait(0.4)
 
 LocalPlayer.Character = fakeChar
 if parentrealchartofakechar then
-    newChar.Parent = fakeChar
+	newChar.Parent = fakeChar
 end
 
 local newcharTorso = newChar:WaitForChild("Torso")
@@ -124,10 +137,13 @@ local jointmapping = {
 
 local setdesiredangle = jointmapping["Neck"].SetDesiredAngle
 
+local ToObjectSpace = CFrame.new().ToObjectSpace
+local ToEulerAnglesXYZ = CFrame.new().ToEulerAnglesXYZ
+
 local function stepReanimate()
 	for joint, limb in pairs(limbmapping) do
-		local relativecframe = limb.CFrame:ToObjectSpace(fakecharTorso.CFrame)
-		local pitch, yaw, _ = relativecframe:ToEulerAnglesXYZ()
+		local relativecframe = ToObjectSpace(limb.CFrame, fakecharTorso.CFrame)
+		local pitch, yaw, _ = ToEulerAnglesXYZ(relativecframe)
 		local angle = 0
 
 		if joint == "Neck" then
@@ -207,29 +223,29 @@ getgenv().fling = function(character, time, yield)
 end
 
 local function disableCollisions()
-    pcall(function()
-    	for _, char in ipairs({ newChar }) do
-		    for _, obj in ipairs(char:GetDescendants()) do
-		    	if obj:IsA("BasePart") then
-		    		obj.CanCollide = false
-	    			obj.Massless = true
-	    		end
-	    	end
-	    end
-    end)
+	pcall(function()
+		for _, char in ipairs({ newChar }) do
+			for _, obj in ipairs(GetDescendants(char)) do
+				if IsA(obj, "BasePart") then
+					obj.CanCollide = false
+					obj.Massless = true
+				end
+			end
+		end
+	end)
 end
 
 local function disableCollisionsWithFakeChar()
-    pcall(function()
-       	for _, char in ipairs({ newChar, fakeChar }) do
-	        for _, obj in ipairs(char:GetDescendants()) do
-		       	if obj:IsA("BasePart") then
-		     		obj.CanCollide = false
-		      		obj.Massless = true
-	    		end
-    		end
-    	end
-    end)
+	pcall(function()
+		for _, char in ipairs({ newChar, fakeChar }) do
+			for _, obj in ipairs(GetDescendants(char)) do
+				if IsA(obj, "BasePart") then
+					obj.CanCollide = false
+					obj.Massless = true
+				end
+			end
+		end
+	end)
 end
 
 local RunService = game:GetService("RunService")
