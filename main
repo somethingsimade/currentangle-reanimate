@@ -23,7 +23,7 @@ local nametoexcludefromtransparency = _G["Names to exclude from transparency"] o
 
 local parentrealchartofakechar = _G["Parent real character to fake character"] or false
 
-local respawncharacter = _G["Respawn character"]
+local respawncharacter = _G["Respawn character"] or true
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
