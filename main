@@ -188,6 +188,7 @@ local function flinginternal(character, time)
 	flinging = true
 	local start = tick()
 	repeat
+		twait()
 		if tick() - start >= time then
 			setdestroyheight(currentheight)
 			flinging = false
