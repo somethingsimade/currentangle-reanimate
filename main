@@ -11,6 +11,8 @@ local getgenv = getgenv or function()
 	return _G
 end
 
+local NaN = 0/0
+
 local dummypart = Instance.new("Part")
 
 local GetDescendants = dummypart.GetDescendants
@@ -185,7 +187,7 @@ local function flinginternal(character, time)
 
 	flinging = true
 	local start = tick()
-	while twait() do
+	repeat
 		if tick() - start >= time then
 			setdestroyheight(currentheight)
 			flinging = false
@@ -208,12 +210,12 @@ local function flinginternal(character, time)
 			flinging = false
 			break
 		end
-	end
+	until flinging == false
 
 end
 
 getgenv().fling = function(character, time, yield)
-	setdestroyheight(0/0)
+	setdestroyheight(NaN)
 	local yield = yield or false
 	if yield then
 		flinginternal(character, time)
