@@ -36,7 +36,7 @@ local parentrealchartofakechar = _G["Parent real character to fake character"] o
 
 local respawncharacter = (function() if _G["Respawn character"] == nil then return true else return _G["Respawn character"] end end)()
 
-local instantrespawn = (function() if _G["Instant respawn"] == nil then return true else return _G["Instant respawn"] end end)()
+local instantrespawn = (function() if _G["Instant respawn"] == nil then return false else return _G["Instant respawn"] end end)()
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
