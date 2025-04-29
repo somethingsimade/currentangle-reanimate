@@ -12,7 +12,13 @@ settings["Disable character scripts"] = true
 settings["Fake character should collide"] = true
 settings["Parent real character to fake character"] = false
 settings["Respawn character"] = true --[[ only should be disabled if
-your character havent played ANY animations, otherwise it breaks the reanimate]]
+your character havent played ANY animations, otherwise it breaks the reanimate ]]
+settings["Instant respawn"] = false --[[ Instant respawns the
+character, it will still wait the respawn time, but your character wont be dead.
+Requires: replicatesignal function
+Enable if you want the feature
+]]
+
 settings["Names to exclude from transparency"] = {
     --[[ example:
     ["HumanoidRootPart"] = true,
