@@ -1,3 +1,4 @@
+
 if not game.IsLoaded then
 	game.Loaded:Wait()
 end
@@ -35,6 +36,8 @@ local nametoexcludefromtransparency = _G["Names to exclude from transparency"] o
 local parentrealchartofakechar = _G["Parent real character to fake character"] or false
 
 local respawncharacter = (function() if _G["Respawn character"] == nil then return true else return _G["Respawn character"] end end)()
+
+local instantrespawn = (function() if _G["Instant respawn"] == nil then return true else return _G["Instant respawn"] end end)()
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
@@ -80,10 +83,21 @@ local fakeChar = originalChar:Clone()
 fakeChar.Name = LocalPlayer.Name .. "_Fake"
 fakeChar.Parent = workspace
 currentfakechar = fakeChar
+local signaldiedbackend = LocalPlayer.ConnectDiedSignalBackend
+local signalkill = LocalPlayer.Kill
 
 if respawncharacter then
-	originalChar:BreakJoints()
-	LocalPlayer.CharacterAdded:Wait()
+	if instantrespawn then
+        if replicatesignal then
+            replicatesignal(signaldiedbackend)
+            twait(game.Players.RespawnTime - 0.05)
+            replicatesignal(signalkill)
+            LocalPlayer.CharacterAdded:Wait()
+        end
+    else
+        originalChar:BreakJoints()
+	    LocalPlayer.CharacterAdded:Wait()
+    end
 end
 
 twait(zeropointone)
