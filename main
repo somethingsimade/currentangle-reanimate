@@ -178,7 +178,7 @@ local function stepReanimate()
 	end
 	if fakecharTorso and not flinging then
 		tspawn(function()
-			newcharRoot.CFrame = fakecharTorso.CFrame + Vector3_new(0, 0, math_random(1, 2) / 333.198)
+			newcharRoot.CFrame = fakecharTorso.CFrame + Vector3_new(0, 0, math_random(1, 2) / 325.19)
 			newcharRoot.Velocity = vector3zero
 			newcharRoot.RotVelocity = vector3zero
 		end)
