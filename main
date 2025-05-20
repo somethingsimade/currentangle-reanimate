@@ -2,6 +2,40 @@ if not game.IsLoaded then
 	game.Loaded:Wait()
 end
 
+local game = game
+local debug = debug
+local debug_info = debug.info
+
+local gameIndex
+local gameNewIndex
+
+local getrawmetatableworks = false
+
+if getrawmetatable then
+	local s, r = pcall(getrawmetatable, game)
+	if s then  
+		if r.__index then
+			gameIndex = r.__index
+			gameNewIndex = r.__newindex
+			getrawmetatableworks = true
+		end
+	end
+end
+
+if not getrawmetatableworks then
+	xpcall(function()
+		return game[{}]
+	end, function()
+		gameIndex = debug_info(2, "f")
+	end)
+
+	xpcall(function()
+		game[{}] = {}
+	end, function()
+		gameNewIndex = debug_info(2, "f")
+	end)
+end
+
 local zeropointone = 0.1
 local twait = task.wait
 local tspawn = task.spawn
@@ -83,20 +117,20 @@ local signalkill = LocalPlayer.Kill
 
 if respawncharacter then
 	if instantrespawn then
-        if replicatesignal then
-            replicatesignal(signaldiedbackend)
-            twait(game.Players.RespawnTime - 0.05)
-            replicatesignal(signalkill)
-            LocalPlayer.CharacterAdded:Wait()
-            fakeChar.Parent = workspace
-            currentfakechar = fakeChar
-        end
-    else
-        originalChar:BreakJoints()
-	    LocalPlayer.CharacterAdded:Wait()
-        fakeChar.Parent = workspace
-        currentfakechar = fakeChar
-    end
+		if replicatesignal then
+			replicatesignal(signaldiedbackend)
+			twait(game.Players.RespawnTime - 0.05)
+			replicatesignal(signalkill)
+			LocalPlayer.CharacterAdded:Wait()
+			fakeChar.Parent = workspace
+			currentfakechar = fakeChar
+		end
+	else
+		originalChar:BreakJoints()
+		LocalPlayer.CharacterAdded:Wait()
+		fakeChar.Parent = workspace
+		currentfakechar = fakeChar
+	end
 end
 
 twait(zeropointone)
@@ -150,38 +184,40 @@ local jointmapping = {
 	["Right Hip"] = newcharTorso:WaitForChild("Right Hip")
 }
 
-local setdesiredangle = jointmapping["Neck"].SetDesiredAngle
+local setdesiredangle = gameIndex(jointmapping["Neck"], "SetDesiredAngle")
 
 local ToObjectSpace = CFrame.new().ToObjectSpace
 local ToEulerAnglesXYZ = CFrame.new().ToEulerAnglesXYZ
 
+local function stepInternal(joint, limb)
+	local relativecframe = ToObjectSpace(limb.CFrame, fakecharTorso.CFrame)
+	local pitch, yaw, _ = ToEulerAnglesXYZ(relativecframe)
+	local angle = 0
+
+	if joint == "Neck" then
+		angle = -yaw
+	elseif joint == "Left Shoulder" or joint == "Left Hip" then
+		angle = pitch
+	elseif joint == "Right Shoulder" or joint == "Right Hip" then
+		angle = -pitch
+	end
+
+	local realJoint = jointmapping[joint]
+	setdesiredangle(realJoint, angle)
+	gameNewIndex(realJoint, "CurrentAngle", angle)
+	gameNewIndex(realJoint, "DesiredAngle", angle)
+	if fakecharTorso and not flinging then
+
+		newcharRoot.CFrame = fakecharTorso.CFrame + Vector3_new(0, 0, math_random(1, 2) / 326.19)
+		newcharRoot.Velocity = vector3zero
+		newcharRoot.RotVelocity = vector3zero
+
+	end
+end
+
 local function stepReanimate()
 	for joint, limb in pairs(limbmapping) do
-		local relativecframe = ToObjectSpace(limb.CFrame, fakecharTorso.CFrame)
-		local pitch, yaw, _ = ToEulerAnglesXYZ(relativecframe)
-		local angle = 0
-
-		if joint == "Neck" then
-			angle = -yaw
-		elseif joint == "Left Shoulder" or joint == "Left Hip" then
-			angle = pitch
-		elseif joint == "Right Shoulder" or joint == "Right Hip" then
-			angle = -pitch
-		end
-
-		local realJoint = jointmapping[joint]
-		tspawn(function()
-			setdesiredangle(realJoint, angle) 
-			realJoint.CurrentAngle = angle
-			realJoint.DesiredAngle = angle
-		end)
-	end
-	if fakecharTorso and not flinging then
-		tspawn(function()
-			newcharRoot.CFrame = fakecharTorso.CFrame + Vector3_new(0, 0, math_random(1, 2) / 325.19)
-			newcharRoot.Velocity = vector3zero
-			newcharRoot.RotVelocity = vector3zero
-		end)
+		tspawn(stepInternal, joint, limb)
 	end
 end
 
@@ -201,11 +237,11 @@ local function flinginternal(character, time)
 	flinging = true
 	local start = tick()
 	local connection
-    connection = game:GetService("RunService").Heartbeat:Connect(function()
+	connection = game:GetService("RunService").Heartbeat:Connect(function()
 		if tick() - start >= time then
 			setdestroyheight(currentheight)
 			flinging = false
-            connection:Disconnect()
+			connection:Disconnect()
 			--break
 		end
 		if character then
@@ -219,12 +255,12 @@ local function flinginternal(character, time)
 				newcharRoot.RotVelocity = Vector3_new(9e8, 9e8, 9e8)
 			else
 				flinging = false
-                connection:Disconnect()
+				connection:Disconnect()
 				--break
 			end
 		else
 			flinging = false
-            connection:Disconnect()
+			connection:Disconnect()
 			--break
 		end
 	end)
