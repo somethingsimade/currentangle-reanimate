@@ -189,8 +189,9 @@ local setdesiredangle = gameIndex(jointmapping["Neck"], "SetDesiredAngle")
 local ToObjectSpace = CFrame.new().ToObjectSpace
 local ToEulerAnglesXYZ = CFrame.new().ToEulerAnglesXYZ
 
-local function stepInternal(joint, limb)
-	local relativecframe = ToObjectSpace(limb.CFrame, fakecharTorso.CFrame)
+local function stepReanimate()
+	for joint, limb in pairs(limbmapping) do
+			local relativecframe = ToObjectSpace(limb.CFrame, fakecharTorso.CFrame)
 	local pitch, yaw, _ = ToEulerAnglesXYZ(relativecframe)
 	local angle = 0
 
@@ -213,11 +214,6 @@ local function stepInternal(joint, limb)
 		newcharRoot.RotVelocity = vector3zero
 
 	end
-end
-
-local function stepReanimate()
-	for joint, limb in pairs(limbmapping) do
-		tspawn(stepInternal, joint, limb)
 	end
 end
 
