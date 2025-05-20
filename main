@@ -10,6 +10,7 @@ local gameIndex
 local gameNewIndex
 
 local getrawmetatableworks = false
+local isindexsupported = false
 
 if getrawmetatable then
 	local s, r = pcall(getrawmetatable, game)
@@ -34,6 +35,20 @@ if not getrawmetatableworks then
 	end, function()
 		gameNewIndex = debug_info(2, "f")
 	end)
+end
+
+local successtest, err = pcall(function()
+    return gameIndex(game:GetService("Workspace"), "Parent")
+end)
+
+if not successtest then
+    if string.find(err:lower(), "instance expected") then
+        isindexsupported = false
+    else
+        isindexsupported = true
+    end
+        else
+    isindexsupported = true
 end
 
 local zeropointone = 0.1
@@ -205,8 +220,13 @@ local function stepReanimate()
 
 	local realJoint = jointmapping[joint]
 	setdesiredangle(realJoint, angle)
-	gameNewIndex(realJoint, "CurrentAngle", angle)
-	gameNewIndex(realJoint, "DesiredAngle", angle)
+	if isindexsupported then
+        gameNewIndex(realJoint, "CurrentAngle", angle)
+	    gameNewIndex(realJoint, "DesiredAngle", angle)
+    else
+        realJoint.CurrentAngle = angle
+        realJoint.DesiredAngle = angle
+    end
 	if fakecharTorso and not flinging then
 
 		newcharRoot.CFrame = fakecharTorso.CFrame + Vector3_new(0, 0, math_random(1, 2) / 326.19)
