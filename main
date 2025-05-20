@@ -74,14 +74,10 @@ end
 
 LocalPlayer.CharacterAdded:Once(removeAnims)
 
-removeAnims(LocalPlayer.Character)
-
 LocalPlayer.Character.Archivable = true
 local originalChar = LocalPlayer.Character
 local fakeChar = originalChar:Clone()
 fakeChar.Name = LocalPlayer.Name .. "_Fake"
-fakeChar.Parent = workspace
-currentfakechar = fakeChar
 local signaldiedbackend = LocalPlayer.ConnectDiedSignalBackend
 local signalkill = LocalPlayer.Kill
 
@@ -92,10 +88,14 @@ if respawncharacter then
             twait(game.Players.RespawnTime - 0.05)
             replicatesignal(signalkill)
             LocalPlayer.CharacterAdded:Wait()
+            fakeChar.Parent = workspace
+            currentfakechar = fakeChar
         end
     else
         originalChar:BreakJoints()
 	    LocalPlayer.CharacterAdded:Wait()
+        fakeChar.Parent = workspace
+        currentfakechar = fakeChar
     end
 end
 
