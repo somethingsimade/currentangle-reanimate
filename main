@@ -184,7 +184,7 @@ local jointmapping = {
 	["Right Hip"] = newcharTorso:WaitForChild("Right Hip")
 }
 
-local setdesiredangle = gameIndex(jointmapping["Neck"], "SetDesiredAngle")
+local setdesiredangle = jointmapping["Neck"].SetDesiredAngle
 
 local ToObjectSpace = CFrame.new().ToObjectSpace
 local ToEulerAnglesXYZ = CFrame.new().ToEulerAnglesXYZ
