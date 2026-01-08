@@ -4,6 +4,7 @@ stable currentangle reanimate with some more settings
 # httpget
 ```lua
 -- SETTINGS --
+local oldsettings = settings --// This is a default Roblox function, to prevent it from breaking we replace it with the function again at the end
 local settings = _G
 
 settings["Use default animations"] = true
@@ -35,6 +36,7 @@ task.spawn(function()
 end)
 
 repeat task.wait() until finished
+settings = oldsettings
 
 -- USAGE: getgenv().fling(character, time, yield) if you dont have getgenv: _G.fling(character, time, yield)
 -- or just fling(character, time, yield)
