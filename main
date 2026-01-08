@@ -225,6 +225,23 @@ fakeChar.Name = LocalPlayer.Name .. "_Fake"
 local signaldiedbackend = LocalPlayer.ConnectDiedSignalBackend
 local signalkill = LocalPlayer.Kill
 
+local function respawn(character: Model)
+	local typeof_ = typeof(replicatesignal) == "function"
+	local Humanoid = character:WaitForChild("Humanoid")
+
+	if respawnmode == "BreakJoints" then
+		character:BreakJoints()
+	elseif respawnmode == "Health" then
+		Humanoid.Health = 0
+	elseif respawnmode == "ServerBreakJoints" and typeof_ then
+		replicatesignal(Humanoid.ServerBreakJoints)
+	elseif respawnmode == "Kill" and typeof_ then
+		replicatesignal(LocalPlayer.Kill)
+    else
+        character:BreakJoints()
+	end
+end
+
 if respawncharacter then
 	LoadUi(game:GetService("Players").RespawnTime)
 	if instantrespawn then
