@@ -18,6 +18,7 @@ character, it will still wait the respawn time, but your character wont be dead.
 Requires: replicatesignal function
 Enable if you want the feature
 ]]
+settings["Client sided display mode"] = 1 --// If you will see the fake character, or the real character, 1 = real character (default), 2 = fake character
 
 settings["Names to exclude from transparency"] = {
     --[[ example:
