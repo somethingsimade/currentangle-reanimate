@@ -1,3 +1,4 @@
+--!native
 --[[
   Licensed under the MIT License (see LICENSE file for full details).
   Copyright (c) 2025 MrY7zz
@@ -76,24 +77,34 @@ local GetDescendants = dummypart.GetDescendants
 local IsA = dummypart.IsA
 local Destroy = dummypart.Destroy
 
+local function getsetting(string_, default) --// Finally
+	if _G[string_] == nil then
+		return default
+	else
+		return _G[string_]
+	end
+end
+
 local math_random = math.random
 local Vector3_new = Vector3.new
 
-local usedefaultanims = _G["Use default animations"] or false
+local usedefaultanims = getsetting("Use default animations", false)
 
-local transparency_level = _G["Fake character transparency level"] or 1
+local transparency_level = getsetting("Local character transparency level", 1) or getsetting("Fake character transparency level", 1) --// Backwards compatibility
 
-local disablescripts = _G["Disable character scripts"] or true
+local disablescripts = getsetting("Disable character scripts", true)
 
-local fakecollisions = _G["Fake character should collide"] or true
+local fakecollisions = getsetting("Fake character should collide", true)
 
-local nametoexcludefromtransparency = _G["Names to exclude from transparency"] or {}
+local nametoexcludefromtransparency = getsetting("Names to exclude from transparency", {})
 
-local parentrealchartofakechar = _G["Parent real character to fake character"] or false
+local parentrealchartofakechar = getsetting("Parent real character to fake character", false)
 
-local respawncharacter = (function() if _G["Respawn character"] == nil then return true else return _G["Respawn character"] end end)()
+local respawncharacter = getsetting("Respawn character", true)
 
-local instantrespawn = (function() if _G["Instant respawn"] == nil then return false else return _G["Instant respawn"] end end)()
+local instantrespawn = getsetting("Instant respawn", false)
+
+local displaymode = getsetting("Client sided display mode", 1)
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
@@ -169,14 +180,6 @@ if disablescripts then
 			end
 		end
 	end)
-end
-
-for _, part in ipairs(fakeChar:GetDescendants()) do
-	if part:IsA("BasePart") or part:IsA("Decal") then
-		if not nametoexcludefromtransparency[tostring(part)] then
-			part.Transparency = transparency_level
-		end
-	end
 end
 
 twait(0.4)
@@ -343,6 +346,24 @@ else
 end
 
 workspace.CurrentCamera.CameraSubject = fakeChar:WaitForChild("Humanoid")
+
+if displaymode == 1 then
+	for _, part in ipairs(fakeChar:GetDescendants()) do
+		if part:IsA("BasePart") or part:IsA("Decal") then
+			if not nametoexcludefromtransparency[tostring(part)] then
+				part.Transparency = transparency_level
+			end
+		end
+	end
+elseif displaymode == 2 then
+	for _, part in ipairs(newChar:GetDescendants()) do
+		if part:IsA("BasePart") or part:IsA("Decal") then
+			if not nametoexcludefromtransparency[tostring(part)] then
+				part.Transparency = transparency_level
+			end
+		end
+	end
+end
 
 finished = true
 
